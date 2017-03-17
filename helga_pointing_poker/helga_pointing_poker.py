@@ -6,12 +6,12 @@ from helga.plugins import command, match, random_ack
 def logic(args, nick):
     if args[0] == 'point':
         if not '--skip-remove' in args:
-            db.helga_poker.entries.remove({'story': args[1], 'nick': nick})
-        db.helga_poker.entries.insert({'story': args[1], 'value': args[2], 'nick': nick})
+            db.helga_poker.entries.remove({'item': args[1], 'nick': nick})
+        db.helga_poker.entries.insert({'item': args[1], 'value': args[2], 'nick': nick})
     elif args[0] == 'show':
         if len(args) < 2:
             return 'Sorry, you need to designate an item to show status on!'
-        queryset = db.helga_poker.entries.find({'story': args[1]})
+        queryset = db.helga_poker.entries.find({'item': args[1]})
         if queryset.count() == 0:
             return 'Sorry, there are no votes for ' + args[1]
         query_nicks = ', '.join([query['nick'] + ':' + query['value'] for query in queryset])
@@ -23,11 +23,13 @@ def logic(args, nick):
     elif args[0] == 'status':
         if len(args) < 2:
             return 'Sorry, you need to designate an item to show status on!'
-        queryset = db.helga_poker.entries.find({'story': args[1]})
+        queryset = db.helga_poker.entries.find({'item': args[1]})
+        if queryset.count() == 0:
+            return 'No votes for ' + args[1] + ':('
         query_nicks = ', '.join(query['nick'] for query in queryset)
-        return '{} votes from: {}'.format(queryset.count(), query_nicks)
+        return '{} votes from: {} for {}'.format(queryset.count(), query_nicks, args[1])
     elif args[0] == 'dump':
-        results = [p['story'] + ' ' + p['value'] + ' ' + p['nick'] for p in db.helga_poker.entries.find()]
+        results = [p['item'] + ' ' + p['value'] + ' ' + p['nick'] for p in db.helga_poker.entries.find()]
         if not results:
             return "Poker database empty"
         payload = {'title': 'helga-pointing-poker dump', 'content': '\n'.join(results)}

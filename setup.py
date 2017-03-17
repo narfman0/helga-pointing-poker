@@ -26,7 +26,7 @@ setup(
     test_suite='tests/test_pointing_poker',
     entry_points=dict(
         helga_plugins=[
-            'pointing-poker = helga_pointing_poker.helga_pointing_poker:helga_pointing_poker',
+            'pointing-poker = helga_pointing_poker.helga_pointing_poker:pointing_poker',
         ],
     ),
 )
